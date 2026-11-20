@@ -26,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare Android project folders
+      - name: Prepare Android project
         shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www
@@ -34,18 +34,13 @@ jobs:
           mkdir -p android/app/src/main/res/drawable
           mkdir -p android/app/src/main/res/values
 
-          cp index.html android/app/src/main/assets/www/
-          cp script.js android/app/src/main/assets/www/
-          cp style.css android/app/src/main/assets/www/
-
+          cp index.html script.js style.css android/app/src/main/assets/www/
           cp AndroidManifest.xml android/app/src/main/
           cp MainActivity.java android/app/src/main/java/com/celecytosis/fbclaboratorypro/
           cp ic_launcher.xml android/app/src/main/res/drawable/
           cp styles.xml android/app/src/main/res/values/
 
-          cp build.gradle android/
-          cp settings.gradle android/
-          cp gradle.properties android/
+          cp build.gradle settings.gradle gradle.properties android/
 
           cat > android/app/build.gradle <<'EOF'
           plugins {
@@ -74,19 +69,30 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
 
-      - name: Install Android SDK packages
+      - name: Accept Android SDK licences
         shell: bash
         run: |
-          SDKMANAGER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}" -type f -name sdkmanager 2>/dev/null | head -n 1)
+          SDKMANAGER=$(find "$ANDROID_HOME" -type f -name sdkmanager 2>/dev/null | head -n 1)
 
           if [ -z "$SDKMANAGER" ]; then
-            echo "Android SDK manager was not found."
+            echo "SDK manager not found"
             exit 1
           fi
 
-          yes | "$SDKMANAGER" --licenses || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+          mkdir -p "$ANDROID_HOME/licenses"
+
+          printf '%s\n' \
+            '8933bad161af4178b1185d1a37fbf41ea5269c55' \
+            'd56f5187479451eabf01fb78af6dfcb131a6481e' \
+            '24333f8a63b6825ea9c5514f83c2829b004d1fee' \
+            > "$ANDROID_HOME/licenses/android-sdk-license"
+
+          printf '%s\n' \
+            '601085b94cd77f0b54ff86406957099ebe79c4d6' \
+            > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
