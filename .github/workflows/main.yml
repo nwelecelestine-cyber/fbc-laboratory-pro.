@@ -5,15 +5,64 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'android/**'
-      - '.github/workflows/**'
+      - 'index.html'
+      - 'script.js'
+      - 'style.css'
+      - 'AndroidManifest.xml'
+      - 'MainActivity.java'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
+      - 'ic_launcher.xml'
+      - 'styles.xml'
+      - '.github/workflows/main.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Prepare Android project folders
+        run: |
+          mkdir -p android/app/src/main/assets/www
+          mkdir -p android/app/src/main/java/com/celecytosis/fbclaboratorypro
+          mkdir -p android/app/src/main/res/drawable
+          mkdir -p android/app/src/main/res/values
+
+          cp index.html android/app/src/main/assets/www/
+          cp script.js android/app/src/main/assets/www/
+          cp style.css android/app/src/main/assets/www/
+
+          cp AndroidManifest.xml android/app/src/main/
+          cp MainActivity.java android/app/src/main/java/com/celecytosis/fbclaboratorypro/
+          cp ic_launcher.xml android/app/src/main/res/drawable/
+          cp styles.xml android/app/src/main/res/values/
+
+          cp build.gradle android/
+          cp settings.gradle android/
+          cp gradle.properties android/
+
+          cat > android/app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.celecytosis.fbclaboratorypro'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.celecytosis.fbclaboratorypro'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+          EOF
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -24,7 +73,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android platform
+      - name: Install Android SDK packages
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
       - name: Set up Gradle
