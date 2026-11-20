@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Prepare Android project folders
+        shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www
           mkdir -p android/app/src/main/java/com/celecytosis/fbclaboratorypro
@@ -71,35 +72,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Locate Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        shell: bash
         run: |
-          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          export ANDROID_SDK_ROOT="$ANDROID_HOME"
-
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
-
-          echo "Searching for Android SDK manager..."
-
-          SDKMANAGER=$(find "$ANDROID_HOME" -type f -name sdkmanager 2>/dev/null | head -n 1)
+          SDKMANAGER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}" -type f -name sdkmanager 2>/dev/null | head -n 1)
 
           if [ -z "$SDKMANAGER" ]; then
-            echo "ERROR: sdkmanager was not found."
-            echo "Android SDK directory: $ANDROID_HOME"
+            echo "Android SDK manager was not found."
             exit 1
           fi
 
-          echo "Found SDK manager at: $SDKMANAGER"
-
-          SDKMANAGER_DIR=$(dirname "$SDKMANAGER")
-          echo "$SDKMANAGER_DIR" >> "$GITHUB_PATH"
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-
-          echo "SDKMANAGER=$SDKMANAGER" >> "$GITHUB_ENV"
-
-      - name: Install Android SDK packages
-        run: |
-          yes | "$SDKMANAGER" --licenses
+          yes | "$SDKMANAGER" --licenses || true
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
