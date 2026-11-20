@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#123b68">
+  <title>FBC Laboratory Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">✚</div>
+      <div>
+        <h1>FBC Laboratory Pro</h1>
+        <p>Full Blood Count & Manual Differential</p>
+      </div>
+    </div>
+    <div class="topbar-note">LOCAL WORKSTATION MODE</div>
+  </header>
+
+  <nav class="tabs" aria-label="Main navigation">
+    <button class="tab active" data-view="entryView">New FBC</button>
+    <button class="tab" data-view="historyView">Patient History <span id="historyBadge">0</span></button>
+  </nav>
+
+  <main id="entryView" class="view">
+
+    <!-- 01 PATIENT REGISTRATION -->
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">01 / REGISTRATION</span>
+          <h2>Patient & specimen details</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label>Patient name *
+          <input id="patientName" autocomplete="off" placeholder="Full name" required>
+        </label>
+
+        <label>Laboratory number *
+          <input id="labNumber" autocomplete="off" placeholder="e.g. HEM-00124" required>
+        </label>
+
+        <label>Age
+          <input id="age" type="number" min="0" max="130" step="any" placeholder="Age">
+        </label>
+
+        <label>Age unit
+          <select id="ageUnit">
+            <option>Years</option>
+            <option>Months</option>
+            <option>Days</option>
+          </select>
+        </label>
+
+        <label>Sex
+          <select id="sex">
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>Specimen
+          <select id="specimen">
+            <option>EDTA whole blood</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>Collection date/time
+          <input id="collectionDate" type="datetime-local">
+        </label>
+
+        <label>Requesting clinician / ward
+          <input id="clinician" placeholder="Optional">
+        </label>
+      </div>
+    </section>
+
+    <!-- 02 FULL BLOOD COUNT -->
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">02 / HAEMATOLOGY</span>
+          <h2>Full blood count measurements</h2>
+        </div>
+        <span class="tag">Enter measured values</span>
+      </div>
+
+      <div class="form-grid three">
+
+        <label>Haemoglobin (Hb) <span class="unit">g/dL</span>
+          <input id="hb" type="number" min="0" step="any" placeholder="e.g. 13.5">
+        </label>
+
+        <label>PCV / Haematocrit <span class="unit">%</span>
+          <input id="pcv" type="number" min="0" max="100" step="any" placeholder="e.g. 40">
+        </label>
+
+        <label>RBC count <span class="unit">×10¹²/L</span>
+          <input id="rbc" type="number" min="0" step="any" placeholder="e.g. 4.5">
+        </label>
+
+        <label>Total WBC <span class="unit">×10⁹/L</span>
+          <input id="wbc" type="number" min="0" step="any" placeholder="Required for absolute differential">
+        </label>
+
+        <label>Platelet count (PLT) <span class="unit">×10⁹/L</span>
+          <input id="platelets" type="number" min="0" step="any" placeholder="e.g. 250">
+        </label>
+
+        <label>Mean Platelet Volume (MPV) <span class="unit">fL</span>
+          <input id="mpv" type="number" min="0" step="any" placeholder="e.g. 9.5">
+        </label>
+
+        <label>RDW-CV <span class="unit">%</span>
+          <input id="rdw" type="number" min="0" step="any" placeholder="Measured value, optional">
+        </label>
+
+      </div>
+
+      <!-- AUTOMATICALLY CALCULATED INDICES -->
+      <div class="calculated-strip">
+
+        <div>
+          <span>MCV</span>
+          <strong id="mcv">—</strong>
+          <small>fL · calculated</small>
+        </div>
+
+        <div>
+          <span>MCH</span>
+          <strong id="mch">—</strong>
+          <small>pg · calculated</small>
+        </div>
+
+        <div>
+          <span>MCHC</span>
+          <strong id="mchc">—</strong>
+          <small>g/dL · calculated</small>
+        </div>
+
+        <div>
+          <span>Plateletcrit (PCT)</span>
+          <strong id="pct">—</strong>
+          <small>% · calculated</small>
+        </div>
+
+      </div>
+
+      <p class="hint">
+        MCV, MCH and MCHC are calculated when the required measured inputs are available.
+        PCT is automatically calculated from platelet count and MPV.
+        RDW-CV and MPV must be entered from the analyser or validated measurements.
+      </p>
+    </section>
+
+    <!-- 03 MANUAL DIFFERENTIAL -->
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">03 / MANUAL DIFFERENTIAL</span>
+          <h2>White blood cell counter</h2>
+        </div>
+        <span class="tag live">● Live counter</span>
+      </div>
+
+      <div class="counter-settings">
+
+        <label>Counting target
+          <select id="target">
+            <option value="100">100 cells</option>
+            <option value="200">200 cells</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+
+        <label>Custom target
+          <input id="customTarget" type="number" min="1" max="10000" placeholder="Enter target" disabled>
+        </label>
+
+        <label class="sound-setting">
+          <input id="soundEnabled" type="checkbox" checked>
+          Sound alert enabled
+        </label>
+
+      </div>
+
+      <div class="count-status">
+        <div>
+          <span class="muted">Cells counted</span>
+          <strong id="progressText">0 / 100</strong>
+        </div>
+        <div class="progress-percent" id="progressPercent">0%</div>
+      </div>
+
+      <div class="progress-track">
+        <div id="progressFill"></div>
+      </div>
+
+      <div id="completionNotice" class="completion-notice" role="status" aria-live="polite" hidden>
+        ✓ Target reached. Differential count complete.
+      </div>
+
+      <div class="counter-grid">
+
+        <button class="counter neut" data-cell="Neutrophils">
+          <span>NEUTROPHILS</span>
+          <strong id="Neutrophils">0</strong>
+          <small>Tap to add one</small>
+        </button>
+
+        <button class="counter lymph" data-cell="Lymphocytes">
+          <span>LYMPHOCYTES</span>
+          <strong id="Lymphocytes">0</strong>
+          <small>Tap to add one</small>
+        </button>
+
+        <button class="counter mono" data-cell="Monocytes">
+          <span>MONOCYTES</span>
+          <strong id="Monocytes">0</strong>
+          <small>Tap to add one</small>
+        </button>
+
+        <button class="counter eos" data-cell="Eosinophils">
+          <span>EOSINOPHILS</span>
+          <strong id="Eosinophils">0</strong>
+          <small>Tap to add one</small>
+        </button>
+
+        <button class="counter baso" data-cell="Basophils">
+          <span>BASOPHILS</span>
+          <strong id="Basophils">0</strong>
+          <small>Tap to add one</small>
+        </button>
+
+      </div>
+
+      <div class="actions">
+        <button id="undoBtn" class="btn secondary" disabled>↶ Undo</button>
+        <button id="resetBtn" class="btn danger">Reset count</button>
+        <button id="calculateBtn" class="btn primary" disabled>Calculate FBC results</button>
+      </div>
+
+      <p class="hint">
+        Count cells from the stained blood film using your laboratory's validated morphology and counting procedure.
+        The sound alert occurs once when the selected target is reached.
+      </p>
+    </section>
+
+    <!-- 04 CALCULATED RESULTS -->
+    <section id="resultsPanel" class="panel" hidden>
+
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">04 / REPORT</span>
+          <h2>Calculated results</h2>
+        </div>
+        <span class="tag">Review before saving</span>
+      </div>
+
+      <div id="reportMeta" class="report-meta"></div>
+
+      <h3 class="subheading">Full blood count</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Result</th>
+              <th>Unit</th>
+              <th>Result type</th>
+            </tr>
+          </thead>
+          <tbody id="cbcResultBody"></tbody>
+        </table>
+      </div>
+
+      <h3 class="subheading">White cell differential</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cell type</th>
+              <th>Count</th>
+              <th>Relative (%)</th>
+              <th>Absolute (×10⁹/L)</th>
+            </tr>
+          </thead>
+          <tbody id="diffResultBody"></tbody>
+        </table>
+      </div>
+
+      <div class="report-actions">
+        <button id="saveBtn" class="btn success">Save patient result</button>
+        <button id="printBtn" class="btn primary">Print report</button>
+      </div>
+
+      <p class="hint warning">
+        Review all entries and calculations against the original analyser results and your laboratory's SOP before authorising a clinical report.
+      </p>
+
+    </section>
+
+  </main>
+
+  <!-- PATIENT HISTORY -->
+  <main id="historyView" class="view" hidden>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">RECORDS</span>
+          <h2>Patient result history</h2>
+        </div>
+        <span class="tag" id="recordCount">0 records</span>
+      </div>
+
+      <div class="history-tools">
+        <input id="historySearch" type="search" placeholder="Search patient name or laboratory number">
+        <button id="exportBtn" class="btn secondary">Export CSV</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Lab number</th>
+              <th>Collection date</th>
+              <th>WBC</th>
+              <th>Saved</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+
+      <p id="emptyHistory" class="empty-state">No saved patient records yet.</p>
+
+      <p class="hint warning">
+        Records are stored only in this browser on this device. This prototype is not an encrypted or centrally backed-up clinical records system.
+      </p>
+    </section>
+
+    <section id="historyDetail" class="panel" hidden>
+      <div class="panel-heading">
+        <h2>Retrieved report</h2>
+        <button id="closeDetail" class="btn secondary">Close</button>
+      </div>
+
+      <div id="historyReport"></div>
+
+      <button id="printHistoryBtn" class="btn primary">Print retrieved report</button>
+    </section>
+
+  </main>
+
+  <footer>
+    FBC Laboratory Pro · Local prototype · Use under laboratory supervision
+  </footer>
+
+</div>
+
+<!-- LIVE PLATELETCRIT CALCULATION -->
+<script>
+(function () {
+  const plateletInput = document.getElementById("platelets");
+  const mpvInput = document.getElementById("mpv");
+  const pctDisplay = document.getElementById("pct");
+
+  function calculatePCT() {
+    const plateletCount = parseFloat(plateletInput.value);
+    const mpv = parseFloat(mpvInput.value);
+
+    if (
+      plateletInput.value.trim() === "" ||
+      mpvInput.value.trim() === "" ||
+      !Number.isFinite(plateletCount) ||
+      !Number.isFinite(mpv) ||
+      plateletCount < 0 ||
+      mpv < 0
+    ) {
+      pctDisplay.textContent = "—";
+      return;
+    }
+
+    const pct = (plateletCount * mpv) / 10000;
+    pctDisplay.textContent = pct.toFixed(3);
+  }
+
+  plateletInput.addEventListener("input", calculatePCT);
+  mpvInput.addEventListener("input", calculatePCT);
+})();
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>
